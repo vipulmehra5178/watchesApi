@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-module.exports = app;
+
 const app = express();
 const PORT = 5000;
 
@@ -26,7 +26,7 @@ const ReviewSchema = new mongoose.Schema({
 
 // Define Watch Schema
 const WatchSchema = new mongoose.Schema({
-  id: { type: String, default: uuidv4 },
+  id: { type: String, default: uuidv4() },
   title: { type: String, required: true },
   brand: { type: String, required: true },
   description: { type: String },
@@ -35,39 +35,10 @@ const WatchSchema = new mongoose.Schema({
   images: { type: [String], required: true },
   categories: { type: [String], required: true },
   gender: { type: String, enum: ["Men", "Women", "Unisex"], required: true },
-  availability: { type: Boolean, default: true },
-  sku: { type: String, required: true, unique: true },
-  technical_specs: {
-    dial_size: { type: String },
-    strap_material: { type: String },
-    water_resistance: { type: String },
-    movement_type: { type: String },
-    battery_life: { type: String },
-    features: { type: [String] },
-  },
-  rating: { type: Number, default: 0 },
-  reviews: [ReviewSchema],
-  inventory: {
-    quantity_in_stock: { type: Number, default: 0 },
-    restock_date: { type: Date },
-  },
-  manufacturer: { type: String },
-  country_of_origin: { type: String },
-  warranty_period: { type: String },
-  shipping: {
-    options: { type: [String] },
-    charges: { type: Number, default: 0 },
-    delivery_time: { type: String },
-  },
-  wishlist_count: { type: Number, default: 0 },
-  purchase_count: { type: Number, default: 0 },
-  promotion: {
-    promotion_id: { type: String },
-    description: { type: String },
-  },
-}, { timestamps: true });
+});
 
-// Create Watch Model
+// Create Models
+const Review = mongoose.model("Review", ReviewSchema);
 const Watch = mongoose.model("Watch", WatchSchema);
 
 // Routes
