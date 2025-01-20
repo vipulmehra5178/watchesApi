@@ -1,7 +1,6 @@
 {
     "version": 2,
     "builds": [
-      {"command": "npm run build"},
       { "src": "api/index.js", "use": "@vercel/node" }
     ],
     "routes": [
