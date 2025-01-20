@@ -7,13 +7,9 @@ const PORT = 5000;
 
 // Middleware
 app.use(express.json());
-
+const url = "mongodb+srv://20bcs5178:Vipul_123@watchapi.o5tli.mongodb.net/?retryWrites=true&w=majority&appName=watchApi";
 // Connect to MongoDB
-mongoose
-  .connect("mongodb://127.0.0.1:27017/watchstore", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+mongoose.connect(url)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Could not connect to MongoDB:", err));
 
