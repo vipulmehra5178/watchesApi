@@ -1,9 +1,12 @@
 import express from "express";
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import cors from 'cors'; 
 
 const app = express();
 const PORT = 5000;
+app.use(cors()); 
+
 
 // Middleware
 app.use(express.json());
