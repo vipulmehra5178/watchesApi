@@ -1,18 +1,19 @@
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 import { v4 as uuidv4 } from "uuid";
-import cors from 'cors'; 
 
 const app = express();
 const PORT = 5000;
-app.use(cors()); 
-
 
 // Middleware
+app.use(cors());
 app.use(express.json());
+
+// MongoDB connection
 const url = "mongodb+srv://20bcs5178:Vipul_123@watchapi.o5tli.mongodb.net/?retryWrites=true&w=majority&appName=watchApi";
-// Connect to MongoDB
-mongoose.connect(url)
+mongoose
+  .connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Could not connect to MongoDB:", err));
 
@@ -25,19 +26,38 @@ const ReviewSchema = new mongoose.Schema({
 
 // Define Watch Schema
 const WatchSchema = new mongoose.Schema({
-  id: { type: String, default: uuidv4() },
+  id: { type: String, default: uuidv4 },
   title: { type: String, required: true },
   brand: { type: String, required: true },
   description: { type: String },
   price: { type: Number, required: true },
   discount: { type: Number, default: 0 },
   images: { type: [String], required: true },
-  categories: { type: [String], required: true },
-  gender: { type: String, enum: ["Men", "Women", "Unisex"], required: true },
-});
+  technical_specs: {
+    dial_size: { type: String },
+    strap_material: { type: String },
+    water_resistance: { type: String },
+    movement_type: { type: String },
+    battery_life: { type: String },
+    features: { type: [String] },
+  },
+  sku: { type: String, unique: true },
+  manufacturer: { type: String },
+  country_of_origin: { type: String },
+  warranty_period: { type: String },
+  rating: { type: Number, default: 0, min: 0, max: 5 },
+  inventory: {
+    quantity_in_stock: { type: Number, required: true, min: 0 },
+  },
+  shipping: {
+    delivery_time: { type: String },
+    charges: { type: Number },
+    options: { type: [String] },
+  },
+  reviews: [ReviewSchema],
+}, { timestamps: true });
 
 // Create Models
-const Review = mongoose.model("Review", ReviewSchema);
 const Watch = mongoose.model("Watch", WatchSchema);
 
 // Routes
@@ -70,7 +90,7 @@ app.post("/watches", async (req, res) => {
     await newWatch.save(); // Save it to the database
     res.status(201).json(newWatch);
   } catch (err) {
-    res.status(500).send("Error adding watch");
+    res.status(500).send(`Error adding watch: ${err.message}`);
   }
 });
 
@@ -81,7 +101,7 @@ app.put("/watches/:id", async (req, res) => {
     if (!updatedWatch) return res.status(404).send("Watch not found.");
     res.json(updatedWatch);
   } catch (err) {
-    res.status(500).send("Error updating watch");
+    res.status(500).send(`Error updating watch: ${err.message}`);
   }
 });
 
@@ -92,7 +112,7 @@ app.delete("/watches/:id", async (req, res) => {
     if (!deletedWatch) return res.status(404).send("Watch not found.");
     res.status(204).send();
   } catch (err) {
-    res.status(500).send("Error deleting watch");
+    res.status(500).send(`Error deleting watch: ${err.message}`);
   }
 });
 
